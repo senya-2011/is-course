@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Card Fragments</title>
+</head>
+<body>
+
+<div th:fragment="form-card(title, action, method, submitText, submitClass, showCancel, cancelText)">
+    <div class="card">
+        <div class="card-header" th:text="${title}"></div>
+        <div class="card-body">
+            <form th:method="${method}" th:action="${action}">
+                <div th:replace="~{::form-content}"></div>
+                <div class="col-md-12">
+                    <button type="submit" th:class="'btn ' + ${submitClass}" th:text="${submitText}"></button>
+                    <a th:if="${showCancel}" href="/" th:class="'btn ' + ${cancelText}" th:text="${cancelText}"></a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="human-create-card">
+    <div class="card" th:if="${isEdit == null or !isEdit}">
+        <div class="card-header">Create Human</div>
+        <div class="card-body">
+            <form method="post" action="/humans">
+                <div th:replace="fragments/forms :: human-form-fields-create"></div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-success">Create Human</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="human-edit-card">
+    <div class="card" th:if="${isEdit}">
+        <div class="card-header">Edit Human #<span th:text="${human.id}"></span></div>
+        <div class="card-body">
+            <form method="post" th:action="@{/humans/{id}/update(id=${human.id})}">
+                <div th:replace="fragments/forms :: human-form-fields"></div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Update Human</button>
+                    <a href="/" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="car-create-card">
+    <div class="card" th:if="${isEditCar == null or !isEditCar}">
+        <div class="card-header">Create Car</div>
+        <div class="card-body">
+            <form method="post" action="/cars">
+                <div th:replace="fragments/forms :: car-form-fields-create"></div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">Create Car</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="car-edit-card">
+    <div class="card" th:if="${isEditCar}">
+        <div class="card-header">Edit Car #<span th:text="${car.id}"></span></div>
+        <div class="card-body">
+            <form method="post" th:action="@{/cars/{id}/update(id=${car.id})}">
+                <div th:replace="fragments/forms :: car-form-fields"></div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">Update Car</button>
+                    <a href="/" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="search-card">
+    <div class="card">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <input name="q" th:value="${searchQuery}" class="form-control" placeholder="Search by name, soundtrack, or car...">
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="/" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="alerts">
+    <div th:if="${param.error}" class="alert alert-danger" role="alert">
+        <span th:text="${param.error[0]}"></span>
+    </div>
+    <div th:if="${param.sum}" class="alert alert-info">
+        Sum impact speed: <span th:text="${param.sum[0]}"></span>
+    </div>
+    <div th:if="${param.removed}" class="alert alert-warning">
+        Removed heroes: <span th:text="${param.removed[0]}"></span>
+    </div>
+    <div th:if="${param.changed}" class="alert alert-success">
+        Changed heroes: <span th:text="${param.changed[0]}"></span>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Fragments</title>
+</head>
+<body>
+
+<div th:fragment="human-form-fields" th:object="${human}">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <input name="name" th:field="*{name}" class="form-control" placeholder="Name" required>
+        </div>
+        <div class="col-md-2">
+            <input name="coordinatesX" th:field="*{coordinates.coordX}" type="number" step="any" class="form-control" placeholder="X" required>
+        </div>
+        <div class="col-md-2">
+            <input name="coordinatesY" th:field="*{coordinates.coordY}" type="number" step="any" class="form-control" placeholder="Y (≤818)" required>
+        </div>
+        <div class="col-md-2">
+            <select name="realHero" th:field="*{realHero}" class="form-select">
+                <option value="false">Not Hero</option>
+                <option value="true">Hero</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="hasToothpick" th:field="*{hasToothpick}" class="form-select">
+                <option value="">No toothpick</option>
+                <option value="true">Has toothpick</option>
+                <option value="false">No toothpick</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="carId" th:field="*{car.id}" class="form-select" required>
+                <option value="">Select car (required)</option>
+                <option th:each="car : ${cars}" th:value="${car.id}" th:text="${car.name ?: 'Car #' + car.id}"></option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="mood" th:field="*{mood}" class="form-select">
+                <option value="">No mood</option>
+                <option value="SADNESS">SADNESS</option>
+                <option value="SORROW">SORROW</option>
+                <option value="GLOOM">GLOOM</option>
+                <option value="CALM">CALM</option>
+                <option value="RAGE">RAGE</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input name="impactSpeed" th:field="*{impactSpeed}" type="number" step="any" class="form-control" placeholder="Impact" required>
+        </div>
+        <div class="col-md-2">
+            <select name="weaponType" th:field="*{weaponType}" class="form-select" required>
+                <option value="HAMMER">HAMMER</option>
+                <option value="AXE">AXE</option>
+                <option value="RIFLE">RIFLE</option>
+                <option value="MACHINE_GUN">MACHINE_GUN</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input name="soundtrackName" th:field="*{soundtrackName}" class="form-control" placeholder="Soundtrack" required>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="human-form-fields-create">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <input name="name" class="form-control" placeholder="Name" required>
+        </div>
+        <div class="col-md-2">
+            <input name="coordinatesX" type="number" step="any" class="form-control" placeholder="X" required>
+        </div>
+        <div class="col-md-2">
+            <input name="coordinatesY" type="number" step="any" class="form-control" placeholder="Y (≤818)" required>
+        </div>
+        <div class="col-md-2">
+            <select name="realHero" class="form-select">
+                <option value="false">Not Hero</option>
+                <option value="true">Hero</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="hasToothpick" class="form-select">
+                <option value="">No toothpick</option>
+                <option value="true">Has toothpick</option>
+                <option value="false">No toothpick</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="carId" class="form-select" required>
+                <option value="">Select car (required)</option>
+                <option th:each="car : ${cars}" th:value="${car.id}" th:text="${car.name ?: 'Car #' + car.id}"></option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="mood" class="form-select">
+                <option value="">No mood</option>
+                <option value="SADNESS">SADNESS</option>
+                <option value="SORROW">SORROW</option>
+                <option value="GLOOM">GLOOM</option>
+                <option value="CALM">CALM</option>
+                <option value="RAGE">RAGE</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input name="impactSpeed" type="number" step="any" class="form-control" placeholder="Impact" required>
+        </div>
+        <div class="col-md-2">
+            <select name="weaponType" class="form-select" required>
+                <option value="HAMMER">HAMMER</option>
+                <option value="AXE">AXE</option>
+                <option value="RIFLE">RIFLE</option>
+                <option value="MACHINE_GUN">MACHINE_GUN</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input name="soundtrackName" class="form-control" placeholder="Soundtrack" required>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="car-form-fields" th:object="${car}">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <input name="name" th:field="*{name}" class="form-control" placeholder="Car name (optional)">
+        </div>
+        <div class="col-md-3">
+            <select name="cool" th:field="*{cool}" class="form-select">
+                <option value="false">Not cool</option>
+                <option value="true">Cool</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="car-form-fields-create">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <input name="name" class="form-control" placeholder="Car name (optional)">
+        </div>
+        <div class="col-md-3">
+            <select name="cool" class="form-select">
+                <option value="false">Not cool</option>
+                <option value="true">Cool</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

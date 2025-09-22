@@ -1,0 +1,115 @@
+package com.is.lab1.controller;
+
+import com.is.lab1.data.Car;
+import com.is.lab1.service.CarService;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+/**
+   * Контроллер для реквестов для машин.
+   */
+@Controller
+@RequestMapping("/cars")
+public class CarController {
+
+  private final CarService carService;
+
+  /**
+   * Конструктор для Кар-Контролера.
+   *
+   * @param carService добавляем сервис для машин
+   */
+  public CarController(CarService carService) {
+    this.carService = carService;
+  }
+
+  /**
+   * Создание машины.
+   *
+   * @param name название машины (необязательно)
+   * @param cool крутость машины (по дефолту false)
+   * @return redirect на home page
+   */
+  @PostMapping
+  public String createCar(@RequestParam(required = false) String name,
+                         @RequestParam(defaultValue = "false") Boolean cool) {
+    Car car = new Car();
+    car.setName(name != null && !name.isEmpty() ? name : null);
+    car.setCool(cool != null ? cool : false);
+    carService.create(car);
+    return "redirect:/";
+  }
+
+  /**
+   * Удаляет машину по Id, если она не используется.
+   *
+   * @param id ид машины
+   * @return redirect на home page и возвращает ошибку если она используется
+   */
+  @PostMapping("/{id}/delete")
+  public String deleteCar(@PathVariable Long id) {
+    try {
+      carService.deleteIfUnused(id);
+      return "redirect:/";
+    } catch (Exception ex) {
+      String msg = ex.getMessage() == null ? "Delete failed" : ex.getMessage();
+      return "redirect:/?error=" + msg;
+    }
+  }
+
+  /**
+   * Форма для изменения машины по Id.
+   *
+   * @param id Ид машины которые мы меняем
+   * @param model модель для передачи данных в шаблон
+   * @return шаблон index для редактирования
+   */
+  @GetMapping("/{id}/edit")
+  public String editCarForm(@PathVariable Long id, Model model) {
+    Car car = carService.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Car not found"));
+    List<Car> cars = carService.findAll();
+
+    model.addAttribute("car", car);
+    model.addAttribute("cars", cars);
+    model.addAttribute("isEdit", false);
+    model.addAttribute("isEditCar", true);
+    model.addAttribute("currentPage", 0);
+    model.addAttribute("totalPages", 1);
+    model.addAttribute("hasNext", false);
+    model.addAttribute("hasPrev", false);
+    model.addAttribute("searchQuery", "");
+
+    return "index";
+  }
+
+  /**
+   * Обновляет машину по Id с новыми параметрами.
+   *
+   * @param id ид машины которую обновляем
+   * @param name новое название машины (необязательно)
+   * @param cool крутость машины (по дефолту false)
+   * @return redirect на главную страницу
+   */
+  @PostMapping("/{id}/update")
+  public String updateCar(@PathVariable Long id,
+                         @RequestParam(required = false) String name,
+                         @RequestParam(defaultValue = "false") Boolean cool) {
+    Car car = carService.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Car not found"));
+
+    car.setName(name != null && !name.isEmpty() ? name : null);
+    car.setCool(cool);
+
+    carService.update(id, car);
+    return "redirect:/";
+  }
+}
