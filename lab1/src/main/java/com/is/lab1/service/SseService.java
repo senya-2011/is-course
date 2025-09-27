@@ -6,19 +6,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-/**
- * Service для Server-Sent Events.
- */
 @Service
 public class SseService {
 
   private final Set<SseEmitter> emitters = new CopyOnWriteArraySet<>();
 
-  /**
-   * Подписка на sse event.
-   *
-   * @return SSE emitter
-   */
   public SseEmitter subscribe() {
     SseEmitter emitter = new SseEmitter(0L);
     emitters.add(emitter);
@@ -33,11 +25,6 @@ public class SseService {
     return emitter;
   }
 
-  /**
-   * Транслировать для подписчиком.
-   *
-   * @param eventName имя ивента
-   */
   public void broadcast(String eventName) {
     for (SseEmitter emitter : emitters) {
       try {

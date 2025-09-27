@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/**
- * Контроллер для операций с людьми.
- */
 @Controller
 @RequestMapping("/humans")
 public class HumanController {
@@ -28,32 +25,11 @@ public class HumanController {
   private final HumanBeingService humanService;
   private final CarService carService;
 
-  /**
-   * Конструктор.
-   *
-   * @param humanService сервис для людей
-   * @param carService сервис для машин
-   */
   public HumanController(HumanBeingService humanService, CarService carService) {
     this.humanService = humanService;
     this.carService = carService;
   }
 
-  /**
-   * Создает нового человека.
-   *
-   * @param name имя
-   * @param coordinatesX координата x
-   * @param coordinatesY координата y
-   * @param realHero настоящий ли герой
-   * @param hasToothpick есть ли зубочистка
-   * @param carId ид машины
-   * @param mood настроение
-   * @param impactSpeed скорость удара
-   * @param weaponType тип оружия
-   * @param soundtrackName название саундтрека
-   * @return redirect URL
-   */
   @PostMapping
   public String createHuman(@RequestParam String name,
       @RequestParam Float coordinatesX,
@@ -105,12 +81,6 @@ public class HumanController {
     }
   }
 
-  /**
-   * Удаляет человека по Id.
-   *
-   * @param id ид
-   * @return redirect URL
-   */
   @PostMapping("/{id}/delete")
   public String deleteHuman(@PathVariable Long id) {
     try {
@@ -123,13 +93,6 @@ public class HumanController {
     }
   }
 
-  /**
-   * Показывает форму редактирования человека по Id.
-   *
-   * @param id ид
-   * @param model модель
-   * @return redirect URL
-   */
   @GetMapping("/{id}/edit")
   public String editHumanForm(@PathVariable Long id, Model model) {
     HumanBeing human = humanService.findById(id)
@@ -149,22 +112,6 @@ public class HumanController {
     return "index";
   }
 
-  /**
-   * Обновляет человека.
-   *
-   * @param id ид
-   * @param name имя
-   * @param coordinatesX координата x
-   * @param coordinatesY координата y
-   * @param realHero настоящий ли герой
-   * @param hasToothpick есть ли зубочистка
-   * @param carId ид машины
-   * @param mood настроение
-   * @param impactSpeed скорость удара
-   * @param weaponType тип оружия
-   * @param soundtrackName название саундтрека
-   * @return redirect URL
-   */
   @PostMapping("/{id}/update")
   public String updateHuman(@PathVariable Long id,
       @RequestParam String name,
@@ -207,12 +154,6 @@ public class HumanController {
     return "redirect:/";
   }
 
-  /**
-   * Считает сумму скоростей.
-   *
-   * @param model модель
-   * @return redirect URL
-   */
   @PostMapping("/sum-impact")
   public String sumImpact(Model model) {
     double sum = humanService.sumImpactSpeed();
@@ -220,12 +161,6 @@ public class HumanController {
     return "redirect:/?sum=" + sum;
   }
 
-  /**
-   * Удаляет героев без зубочистки.
-   *
-   * @param model модель
-   * @return redirect URL
-   */
   @PostMapping("/delete-heroes-without-toothpick")
   public String deleteHeroesWithoutToothpick(Model model) {
     int removed = humanService.deleteHeroesWithoutToothpick();
@@ -233,12 +168,6 @@ public class HumanController {
     return "redirect:/?removed=" + removed;
   }
 
-  /**
-   * Пересаживает на ладу героев без машины.
-   *
-   * @param model модель
-   * @return redirect URL
-   */
   @PostMapping("/assign-lada")
   public String assignLada(Model model) {
     int changed = humanService.reassignHeroesWithoutCarToLada();

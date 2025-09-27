@@ -8,9 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Класс для Координат используется в других сущностях.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

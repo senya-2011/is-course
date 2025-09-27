@@ -11,35 +11,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/**
- * Веб контроллер для обработки веб запросов.
- */
 @Controller
 public class WebController {
 
   private final HumanBeingService humanService;
   private final CarService carService;
 
-  /**
-   * Конструктор.
-   *
-   * @param humanService сервис для людей
-   * @param carService сервис для машин
-   */
   public WebController(HumanBeingService humanService, CarService carService) {
     this.humanService = humanService;
     this.carService = carService;
   }
 
-  /**
-   * Обрабатывает запрос главной страницы.
-   *
-   * @param model модель
-   * @param page номер страницы
-   * @param size размер страницы
-   * @param q поисковый запрос
-   * @return index
-   */
   @GetMapping("/")
   public String index(Model model,
       @RequestParam(defaultValue = "0") int page,

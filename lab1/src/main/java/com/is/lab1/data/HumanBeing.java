@@ -20,14 +20,10 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Check;
 
-/**
- * Сущность человек.
- */
 @Data
 @NoArgsConstructor
 @Entity
@@ -84,19 +80,6 @@ public class HumanBeing {
   @Column(name = "weapon_type", nullable = false)
   private WeaponType weaponType; //Поле не может быть null
 
-  /**
-   * Конструктор со всеми параметрами.
-   *
-   * @param name имя
-   * @param coordinates координаты
-   * @param realHero настоящий ли герой
-   * @param hasToothpick есть ли зубочистка
-   * @param car машина
-   * @param mood настроение
-   * @param impactSpeed скорость
-   * @param soundtrackName название саундтрека
-   * @param weaponType тип оружия
-   */
   public HumanBeing(String name, Coordinates coordinates, boolean realHero, Boolean hasToothpick,
       Car car, Mood mood, float impactSpeed, String soundtrackName, WeaponType weaponType) {
     this.name = name;
@@ -110,9 +93,6 @@ public class HumanBeing {
     this.weaponType = weaponType;
   }
 
-  /**
-   * Устанавливает дату создания.
-   */
   @PrePersist
   public void prePersist() {
     this.creationDate = LocalDateTime.now();

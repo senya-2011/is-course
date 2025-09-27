@@ -21,9 +21,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Service для людей.
- */
 @Service
 public class HumanBeingService {
 
@@ -34,13 +31,6 @@ public class HumanBeingService {
   @PersistenceContext
   private EntityManager em;
 
-  /**
-   * Конструктор.
-   *
-   * @param humanRepo human being repository
-   * @param carRepo car repository
-   * @param sseService SSE service
-   */
   public HumanBeingService(HumanBeingRepository humanRepo, CarRepository carRepo,
       SseService sseService) {
     this.humanRepo = humanRepo;
@@ -48,38 +38,16 @@ public class HumanBeingService {
     this.sseService = sseService;
   }
 
-  /**
-   * Создать человека.
-   *
-   * @param hb человек
-   * @return созданный человек
-   */
   public HumanBeing create(HumanBeing hb) {
     HumanBeing saved = humanRepo.save(hb);
     sseService.broadcast("data_changed");
     return saved;
   }
 
-  /**
-   * Найти человека по Id.
-   *
-   * @param id ид
-   * @return найденный человек
-   */
   public Optional<HumanBeing> findById(Long id) {
     return humanRepo.findById(id);
   }
 
-  /**
-   * Страница всех людей.
-   *
-   * @param page номер страницы
-   * @param size размер страницы
-   * @param sortBy сортировать по этому полю
-   * @param dir метод сортировки
-   * @param q запрос
-   * @return страница людей
-   */
   public Page<HumanBeing> listAll(int page, int size, String sortBy, String dir, String q) {
     Sort sort = Sort.by(Sort.Direction.fromString(Optional.ofNullable(dir).orElse("ASC")),
         Optional.ofNullable(sortBy).orElse("id"));
@@ -92,13 +60,6 @@ public class HumanBeingService {
     }
   }
 
-  /**
-   * Обновить человека.
-   *
-   * @param id ид человека для update
-   * @param updated обновленный человек
-   * @return обновленный человек
-   */
   @Transactional
   public HumanBeing update(Long id, HumanBeing updated) {
     // Используем блокировку для предотвращения lost updates
@@ -122,11 +83,6 @@ public class HumanBeingService {
     return saved;
   }
 
-  /**
-   * Удалить человека.
-   *
-   * @param id ид человека для удаления
-   */
   @Transactional
   public void delete(Long id) {
     HumanBeing hb = humanRepo.findById(id)
@@ -135,12 +91,6 @@ public class HumanBeingService {
     sseService.broadcast("data_changed");
   }
 
-  /**
-   * Удалить человека по скорости.
-   *
-   * @param value скорость
-   * @return true если человек удален
-   */
   @Transactional
   public boolean deleteOneByImpactSpeed(float value) {
     final double epsilon = 1e-6;
@@ -164,21 +114,10 @@ public class HumanBeingService {
     return false;
   }
 
-  /**
-   * Посчитать сумму скоростей.
-   *
-   * @return сумма скоростей
-   */
   public double sumImpactSpeed() {
     return humanRepo.findAll().stream().mapToDouble(HumanBeing::getImpactSpeed).sum();
   }
 
-  /**
-   * Найти людей по подстроке.
-   *
-   * @param substring подстрока
-   * @return лист найденных людей
-   */
   public List<HumanBeing> findByNameSubstring(String substring) {
     if (substring == null) {
       return Collections.emptyList();
@@ -186,11 +125,6 @@ public class HumanBeingService {
     return humanRepo.findByNameContainingIgnoreCase(substring);
   }
 
-  /**
-   * Удалить людей без зубочистки.
-   *
-   * @return кол-во удаленных людей
-   */
   @Transactional
   public int deleteHeroesWithoutToothpick() {
     // Используем JPQL с блокировкой для атомарной операции
@@ -208,11 +142,6 @@ public class HumanBeingService {
     return toDelete.size();
   }
 
-  /**
-   * Пересадка героев без машины на ладу.
-   *
-   * @return кол-во пересаженных героев
-   */
   @Transactional
   public int reassignHeroesWithoutCarToLada() {
     Car lada = carRepo.findByName("Lada Kalina (red)")
@@ -238,12 +167,6 @@ public class HumanBeingService {
     return changed.size();
   }
 
-  /**
-   * Создает спецификацию для поиска.
-   *
-   * @param q запрос
-   * @return спецификация
-   */
   private Specification<HumanBeing> containsInStringFields(String q) {
     return (root, query, cb) -> {
       String like = "%" + q.toLowerCase(Locale.ROOT) + "%";

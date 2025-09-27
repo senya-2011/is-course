@@ -2,8 +2,6 @@ package com.is.lab1.controller;
 
 import com.is.lab1.data.Car;
 import com.is.lab1.service.CarService;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,31 +11,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/**
-   * Контроллер для реквестов для машин.
-   */
 @Controller
 @RequestMapping("/cars")
 public class CarController {
 
   private final CarService carService;
 
-  /**
-   * Конструктор для Кар-Контролера.
-   *
-   * @param carService добавляем сервис для машин
-   */
   public CarController(CarService carService) {
     this.carService = carService;
   }
 
-  /**
-   * Создание машины.
-   *
-   * @param name название машины (необязательно)
-   * @param cool крутость машины (по дефолту false)
-   * @return redirect на home page
-   */
   @PostMapping
   public String createCar(@RequestParam(required = false) String name,
                          @RequestParam(defaultValue = "false") Boolean cool) {
@@ -48,12 +31,6 @@ public class CarController {
     return "redirect:/";
   }
 
-  /**
-   * Удаляет машину по Id, если она не используется.
-   *
-   * @param id ид машины
-   * @return redirect на home page и возвращает ошибку если она используется
-   */
   @PostMapping("/{id}/delete")
   public String deleteCar(@PathVariable Long id) {
     try {
@@ -65,13 +42,6 @@ public class CarController {
     }
   }
 
-  /**
-   * Форма для изменения машины по Id.
-   *
-   * @param id Ид машины которые мы меняем
-   * @param model модель для передачи данных в шаблон
-   * @return шаблон index для редактирования
-   */
   @GetMapping("/{id}/edit")
   public String editCarForm(@PathVariable Long id, Model model) {
     Car car = carService.findById(id)
@@ -91,14 +61,6 @@ public class CarController {
     return "index";
   }
 
-  /**
-   * Обновляет машину по Id с новыми параметрами.
-   *
-   * @param id ид машины которую обновляем
-   * @param name новое название машины (необязательно)
-   * @param cool крутость машины (по дефолту false)
-   * @return redirect на главную страницу
-   */
   @PostMapping("/{id}/update")
   public String updateCar(@PathVariable Long id,
                          @RequestParam(required = false) String name,

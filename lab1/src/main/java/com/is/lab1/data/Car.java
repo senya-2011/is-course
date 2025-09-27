@@ -6,14 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Сущность машины.
- */
 @Data
 @NoArgsConstructor
 @Entity
@@ -30,12 +25,6 @@ public class Car {
   @Column(name = "cool", nullable = false)
   private boolean cool; //Поле не может быть null
 
-  /**
-   * Конструктор с параметрами.
-   *
-   * @param name название
-   * @param cool крутая ли машина
-   */
   public Car(String name, boolean cool) {
     this.name = name;
     this.cool = cool;
