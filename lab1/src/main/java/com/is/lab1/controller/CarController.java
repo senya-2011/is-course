@@ -4,6 +4,7 @@ import com.is.lab1.data.Car;
 import com.is.lab1.service.CarService;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,9 +40,12 @@ public class CarController {
     try {
       carService.deleteIfUnused(id);
       return ResponseEntity.ok().body(Map.of("message", "Car deleted successfully"));
+    } catch (IllegalArgumentException ex) {
+      return ResponseEntity.badRequest().body(Map.of("error", "Cannot delete car: " + ex.getMessage()));
+    } catch (NoSuchElementException ex) {
+      return ResponseEntity.notFound().build();
     } catch (Exception ex) {
-      String msg = ex.getMessage() == null ? "Delete failed" : ex.getMessage();
-      return ResponseEntity.badRequest().body(Map.of("error", msg));
+      return ResponseEntity.status(500).body(Map.of("error", "Internal server error occurred"));
     }
   }
 
