@@ -12,8 +12,11 @@ import com.is.lab1.service.HumanBeingService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -84,6 +87,18 @@ public class HumanController {
       String msg = ex.getMessage() == null ? "Create failed" : ex.getMessage();
       String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
       return "redirect:/?error=" + encoded;
+    }
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteHumanApi(@PathVariable Long id) {
+    try {
+      humanService.delete(id);
+      return ResponseEntity.ok().body(Map.of("message", "HumanBeing deleted successfully"));
+    } catch (HumanBeingNotFoundException ex) {
+      return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
+    } catch (Exception ex) {
+      return ResponseEntity.status(500).body(Map.of("error", "Internal server error occurred"));
     }
   }
 
