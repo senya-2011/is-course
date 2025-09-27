@@ -23,17 +23,17 @@ class HumanBeingRepositoryTests {
 
     private HumanBeing createSample(String name, String carName) {
         Car car = carRepo.save(new Car(carName, false));
-        HumanBeing h = new HumanBeing(
-                name,
-                new Coordinates(1f, 2f),
-                true,
-                false,
-                car,
-                Mood.CALM,
-                10.0f,
-                "OST",
-                WeaponType.AXE
-        );
+        HumanBeing h = HumanBeing.builder()
+                .name(name)
+                .coordinates(new Coordinates(1f, 2f))
+                .realHero(true)
+                .hasToothpick(false)
+                .car(car)
+                .mood(Mood.CALM)
+                .impactSpeed(10.0f)
+                .soundtrackName("OST")
+                .weaponType(WeaponType.AXE)
+                .build();
         return humanRepo.save(h);
     }
 
