@@ -5,6 +5,7 @@ import com.is.lab1.data.HumanBeing;
 import com.is.lab1.service.CarService;
 import com.is.lab1.service.HumanBeingService;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +28,7 @@ public class WebController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(required = false) String q) {
-    Page<HumanBeing> humans = humanService.listAll(page, size, null, "DESC", q);
+    Page<HumanBeing> humans = humanService.listAll(page, size, Optional.empty(), Optional.of("DESC"), Optional.ofNullable(q));
     List<Car> cars = carService.findAll();
 
     model.addAttribute("humans", humans.getContent());

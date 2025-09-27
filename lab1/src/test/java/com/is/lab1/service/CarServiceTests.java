@@ -5,6 +5,7 @@ import com.is.lab1.data.Coordinates;
 import com.is.lab1.data.HumanBeing;
 import com.is.lab1.data.Mood;
 import com.is.lab1.data.WeaponType;
+import com.is.lab1.exception.CarNotFoundException;
 import com.is.lab1.repository.CarRepository;
 import com.is.lab1.repository.HumanBeingRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -44,7 +43,7 @@ class CarServiceTests {
     @DisplayName("update throws when not found")
     void update_throwsWhenMissing() {
         assertThatThrownBy(() -> carService.update(9999L, new Car("X", false)))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(CarNotFoundException.class);
     }
 
     @Test
@@ -54,7 +53,7 @@ class CarServiceTests {
         HumanBeing h = new HumanBeing("H", new Coordinates(1f,2f), true, false, car, Mood.CALM, 1f, "s", WeaponType.AXE);
         humanRepository.save(h);
         assertThatThrownBy(() -> carService.deleteIfUnused(car.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
     }
 }
 

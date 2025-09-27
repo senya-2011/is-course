@@ -42,16 +42,16 @@ public class HumanBeingService {
     return humanRepo.findById(id);
   }
 
-  public Page<HumanBeing> listAll(int page, int size, String sortBy, String dir, String q) {
-    Sort sort = Sort.by(Sort.Direction.fromString(Optional.ofNullable(dir).orElse("ASC")),
-        Optional.ofNullable(sortBy).orElse("id"));
+  public Page<HumanBeing> listAll(int page, int size, Optional<String> sortBy, Optional<String> dir, Optional<String> q) {
+    Sort sort = Sort.by(Sort.Direction.fromString(dir.orElse("ASC")),
+        sortBy.orElse("id"));
     Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size), sort);
-    if (q == null || q.trim().isEmpty()) {
-      return humanRepo.findAll(pageable);
-    } else {
-      Specification<HumanBeing> spec = containsInStringFields(q);
-      return humanRepo.findAll(spec, pageable);
-    }
+    
+    return q
+        .filter(query -> !query.trim().isEmpty())
+        .map(this::containsInStringFields)
+        .map(spec -> humanRepo.findAll(spec, pageable))
+        .orElse(humanRepo.findAll(pageable));
   }
 
   @Transactional
@@ -100,11 +100,11 @@ public class HumanBeingService {
     return sum != null ? sum : 0.0;
   }
 
-  public List<HumanBeing> findByNameSubstring(String substring) {
-    if (substring == null) {
-      return Collections.emptyList();
-    }
-    return humanRepo.findByNameContainingIgnoreCase(substring);
+  public List<HumanBeing> findByNameSubstring(Optional<String> substring) {
+    return substring
+        .filter(s -> !s.trim().isEmpty())
+        .map(humanRepo::findByNameContainingIgnoreCase)
+        .orElse(Collections.emptyList());
   }
 
   @Transactional
