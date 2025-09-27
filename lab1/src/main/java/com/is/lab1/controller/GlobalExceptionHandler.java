@@ -2,6 +2,7 @@ package com.is.lab1.controller;
 
 import com.is.lab1.exception.CarCannotBeDeletedException;
 import com.is.lab1.exception.CarNotFoundException;
+import com.is.lab1.exception.HumanBeingNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +39,11 @@ public class GlobalExceptionHandler {
         .body(Map.of("message", ex.getMessage()));
   }
 
+  @ExceptionHandler(HumanBeingNotFoundException.class)
+  public ResponseEntity<?> handleHumanBeingNotFound(HumanBeingNotFoundException ex) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(Map.of("message", ex.getMessage()));
+  }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<?> handleAny(Exception ex) {

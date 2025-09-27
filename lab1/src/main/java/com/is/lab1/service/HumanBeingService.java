@@ -2,16 +2,13 @@ package com.is.lab1.service;
 
 import com.is.lab1.data.Car;
 import com.is.lab1.data.HumanBeing;
+import com.is.lab1.exception.HumanBeingNotFoundException;
 import com.is.lab1.repository.CarRepository;
 import com.is.lab1.repository.HumanBeingRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.JoinType;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,9 +24,6 @@ public class HumanBeingService {
   private final HumanBeingRepository humanRepo;
   private final CarRepository carRepo;
   private final SseService sseService;
-
-  @PersistenceContext
-  private EntityManager em;
 
   public HumanBeingService(HumanBeingRepository humanRepo, CarRepository carRepo,
       SseService sseService) {
@@ -62,12 +56,8 @@ public class HumanBeingService {
 
   @Transactional
   public HumanBeing update(Long id, HumanBeing updated) {
-    // Используем блокировку для предотвращения lost updates
-    HumanBeing existing = em.find(HumanBeing.class, id, 
-        jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
-    if (existing == null) {
-      throw new NoSuchElementException("HumanBeing not found: " + id);
-    }
+    HumanBeing existing = humanRepo.findById(id)
+        .orElseThrow(() -> new HumanBeingNotFoundException("HumanBeing with id " + id + " not found"));
     
     existing.setName(updated.getName());
     existing.setCoordinates(updated.getCoordinates());
@@ -86,7 +76,7 @@ public class HumanBeingService {
   @Transactional
   public void delete(Long id) {
     HumanBeing hb = humanRepo.findById(id)
-        .orElseThrow(() -> new NoSuchElementException("HumanBeing not found: " + id));
+        .orElseThrow(() -> new HumanBeingNotFoundException("HumanBeing with id " + id + " not found"));
     humanRepo.delete(hb);
     sseService.broadcast("data_changed");
   }
@@ -95,16 +85,7 @@ public class HumanBeingService {
   public boolean deleteOneByImpactSpeed(float value) {
     final double epsilon = 1e-6;
     
-    // Используем JPQL с блокировкой для атомарной операции
-    List<HumanBeing> candidates = em.createQuery(
-        "SELECT h FROM HumanBeing h WHERE ABS(h.impactSpeed - :value) <= :epsilon",
-        HumanBeing.class
-    )
-        .setParameter("value", value)
-        .setParameter("epsilon", epsilon)
-        .setLockMode(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
-        .setMaxResults(1) // Берем только первого
-        .getResultList();
+    List<HumanBeing> candidates = humanRepo.findByImpactSpeedWithEpsilon(value, epsilon);
     
     if (!candidates.isEmpty()) {
       humanRepo.delete(candidates.get(0));
@@ -115,7 +96,8 @@ public class HumanBeingService {
   }
 
   public double sumImpactSpeed() {
-    return humanRepo.findAll().stream().mapToDouble(HumanBeing::getImpactSpeed).sum();
+    Double sum = humanRepo.sumImpactSpeed();
+    return sum != null ? sum : 0.0;
   }
 
   public List<HumanBeing> findByNameSubstring(String substring) {
@@ -127,16 +109,11 @@ public class HumanBeingService {
 
   @Transactional
   public int deleteHeroesWithoutToothpick() {
-    // Используем JPQL с блокировкой для атомарной операции
-    List<HumanBeing> toDelete = em.createQuery(
-        "SELECT h FROM HumanBeing h WHERE h.realHero = true AND "
-            + "(h.hasToothpick IS NULL OR h.hasToothpick = false)",
-        HumanBeing.class
-    ).setLockMode(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE).getResultList();
+    List<HumanBeing> toDelete = humanRepo.findHeroesWithoutToothpick();
     
     if (!toDelete.isEmpty()) {
       List<Long> ids = toDelete.stream().map(HumanBeing::getId).toList();
-      humanRepo.deleteAllById(ids);
+      humanRepo.deleteAllByIds(ids);
       sseService.broadcast("data_changed");
     }
     return toDelete.size();
@@ -147,24 +124,14 @@ public class HumanBeingService {
     Car lada = carRepo.findByName("Lada Kalina (red)")
         .orElseGet(() -> carRepo.save(new Car("Lada Kalina (red)", false)));
 
-    // Используем JPQL с блокировкой для атомарной операции
-    List<HumanBeing> heroesWithoutCar = em.createQuery(
-        "SELECT h FROM HumanBeing h WHERE h.realHero = true AND "
-            + "(h.car IS NULL OR h.car.name IS NULL OR TRIM(h.car.name) = '')",
-        HumanBeing.class
-    ).setLockMode(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE).getResultList();
+    List<HumanBeing> heroesWithoutCar = humanRepo.findHeroesWithoutCar();
     
-    List<HumanBeing> changed = new ArrayList<>();
-    for (HumanBeing h : heroesWithoutCar) {
-      h.setCar(lada);
-      HumanBeing saved = humanRepo.save(h);
-      changed.add(saved);
-    }
-    
-    if (!changed.isEmpty()) {
+    if (!heroesWithoutCar.isEmpty()) {
+      List<Long> ids = heroesWithoutCar.stream().map(HumanBeing::getId).toList();
+      humanRepo.updateCarForIds(lada, ids);
       sseService.broadcast("data_changed");
     }
-    return changed.size();
+    return heroesWithoutCar.size();
   }
 
   private Specification<HumanBeing> containsInStringFields(String q) {

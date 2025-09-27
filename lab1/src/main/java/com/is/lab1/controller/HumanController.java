@@ -5,6 +5,8 @@ import com.is.lab1.data.Coordinates;
 import com.is.lab1.data.HumanBeing;
 import com.is.lab1.data.Mood;
 import com.is.lab1.data.WeaponType;
+import com.is.lab1.exception.CarNotFoundException;
+import com.is.lab1.exception.HumanBeingNotFoundException;
 import com.is.lab1.service.CarService;
 import com.is.lab1.service.HumanBeingService;
 import java.net.URLEncoder;
@@ -58,7 +60,7 @@ public class HumanController {
       Car car;
       if (carId != null) {
         car = carService.findById(carId)
-            .orElseThrow(() -> new IllegalArgumentException("Car not found"));
+            .orElseThrow(() -> new CarNotFoundException("Car with id " + carId + " not found"));
       } else {
         car = new Car();
         car.setName("Default Car");
@@ -74,6 +76,10 @@ public class HumanController {
 
       humanService.create(human);
       return "redirect:/";
+    } catch (CarNotFoundException | HumanBeingNotFoundException ex) {
+      String msg = ex.getMessage();
+      String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
+      return "redirect:/?error=" + encoded;
     } catch (Exception ex) {
       String msg = ex.getMessage() == null ? "Create failed" : ex.getMessage();
       String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
@@ -86,6 +92,10 @@ public class HumanController {
     try {
       humanService.delete(id);
       return "redirect:/";
+    } catch (HumanBeingNotFoundException ex) {
+      String msg = ex.getMessage();
+      String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
+      return "redirect:/?error=" + encoded;
     } catch (Exception ex) {
       String msg = ex.getMessage() == null ? "Delete failed" : ex.getMessage();
       String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
@@ -96,7 +106,7 @@ public class HumanController {
   @GetMapping("/{id}/edit")
   public String editHumanForm(@PathVariable Long id, Model model) {
     HumanBeing human = humanService.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("Human not found"));
+        .orElseThrow(() -> new HumanBeingNotFoundException("HumanBeing with id " + id + " not found"));
     List<Car> cars = carService.findAll();
 
     model.addAttribute("human", human);
@@ -124,34 +134,43 @@ public class HumanController {
       @RequestParam Float impactSpeed,
       @RequestParam String weaponType,
       @RequestParam String soundtrackName) {
+    try {
+      HumanBeing human = humanService.findById(id)
+          .orElseThrow(() -> new HumanBeingNotFoundException("HumanBeing with id " + id + " not found"));
 
-    HumanBeing human = humanService.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("Human not found"));
+      human.setName(name);
+      human.setCoordinates(new Coordinates(coordinatesX, coordinatesY));
+      human.setRealHero(realHero);
+      human.setHasToothpick(hasToothpick);
 
-    human.setName(name);
-    human.setCoordinates(new Coordinates(coordinatesX, coordinatesY));
-    human.setRealHero(realHero);
-    human.setHasToothpick(hasToothpick);
+      Car car;
+      if (carId != null) {
+        car = carService.findById(carId)
+            .orElseThrow(() -> new CarNotFoundException("Car with id " + carId + " not found"));
+      } else {
+        car = new Car();
+        car.setName("Default Car");
+        car.setCool(false);
+        car = carService.create(car);
+      }
+      human.setCar(car);
 
-    Car car;
-    if (carId != null) {
-      car = carService.findById(carId)
-          .orElseThrow(() -> new IllegalArgumentException("Car not found"));
-    } else {
-      car = new Car();
-      car.setName("Default Car");
-      car.setCool(false);
-      car = carService.create(car);
+      human.setMood(mood != null && !mood.isEmpty() ? Mood.valueOf(mood) : null);
+      human.setImpactSpeed(impactSpeed);
+      human.setWeaponType(WeaponType.valueOf(weaponType));
+      human.setSoundtrackName(soundtrackName);
+
+      humanService.update(id, human);
+      return "redirect:/";
+    } catch (CarNotFoundException | HumanBeingNotFoundException ex) {
+      String msg = ex.getMessage();
+      String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
+      return "redirect:/?error=" + encoded;
+    } catch (Exception ex) {
+      String msg = ex.getMessage() == null ? "Update failed" : ex.getMessage();
+      String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
+      return "redirect:/?error=" + encoded;
     }
-    human.setCar(car);
-
-    human.setMood(mood != null && !mood.isEmpty() ? Mood.valueOf(mood) : null);
-    human.setImpactSpeed(impactSpeed);
-    human.setWeaponType(WeaponType.valueOf(weaponType));
-    human.setSoundtrackName(soundtrackName);
-
-    humanService.update(id, human);
-    return "redirect:/";
   }
 
   @PostMapping("/sum-impact")
