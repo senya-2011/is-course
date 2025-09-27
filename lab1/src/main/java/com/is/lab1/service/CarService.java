@@ -1,10 +1,11 @@
 package com.is.lab1.service;
 
 import com.is.lab1.data.Car;
+import com.is.lab1.exception.CarCannotBeDeletedException;
+import com.is.lab1.exception.CarNotFoundException;
 import com.is.lab1.repository.CarRepository;
 import com.is.lab1.repository.HumanBeingRepository;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,7 @@ public class CarService {
 
   public Car update(Long id, Car updated) {
     Car existing = carRepository.findById(id)
-        .orElseThrow(() -> new NoSuchElementException("Car not found: " + id));
+        .orElseThrow(() -> new CarNotFoundException("Car not found: " + id));
 
     existing.setName(updated.getName());
     existing.setCool(updated.isCool());
@@ -59,11 +60,11 @@ public class CarService {
   @Transactional
   public void deleteIfUnused(Long id) {
     Car car = carRepository.findById(id)
-        .orElseThrow(() -> new NoSuchElementException("Car not found: " + id));
+        .orElseThrow(() -> new CarNotFoundException("Car not found with id: " + id));
 
     boolean used = humanBeingRepository.existsByCar_Id(id);
     if (used) {
-      throw new IllegalArgumentException("Cannot delete car with id=" + id
+      throw new CarCannotBeDeletedException("Cannot delete car with id=" + id
           + ": it is referenced by human beings.");
     }
 

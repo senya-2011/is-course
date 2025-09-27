@@ -1,10 +1,11 @@
 package com.is.lab1.controller;
 
+import com.is.lab1.exception.CarCannotBeDeletedException;
+import com.is.lab1.exception.CarNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -25,14 +26,14 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(Map.of("errors", errors));
   }
 
-  @ExceptionHandler(NoSuchElementException.class)
-  public ResponseEntity<?> handleNotFound(NoSuchElementException ex) {
+  @ExceptionHandler(CarNotFoundException.class)
+  public ResponseEntity<?> handleCarNotFound(CarNotFoundException ex) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(Map.of("message", ex.getMessage()));
   }
 
-  @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<?> handleBadRequest(IllegalArgumentException ex) {
+  @ExceptionHandler(CarCannotBeDeletedException.class)
+  public ResponseEntity<?> handleCarCannotBeDeleted(CarCannotBeDeletedException ex) {
     return ResponseEntity.badRequest()
         .body(Map.of("message", ex.getMessage()));
   }
