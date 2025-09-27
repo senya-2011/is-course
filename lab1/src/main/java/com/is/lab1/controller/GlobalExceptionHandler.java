@@ -38,6 +38,7 @@ public class GlobalExceptionHandler {
         .body(Map.of("message", ex.getMessage()));
   }
 
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<?> handleAny(Exception ex) {
     ex.printStackTrace();

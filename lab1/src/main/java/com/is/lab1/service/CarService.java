@@ -4,7 +4,6 @@ import com.is.lab1.data.Car;
 import com.is.lab1.exception.CarCannotBeDeletedException;
 import com.is.lab1.exception.CarNotFoundException;
 import com.is.lab1.repository.CarRepository;
-import com.is.lab1.repository.HumanBeingRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -13,13 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CarService {
   private final CarRepository carRepository;
-  private final HumanBeingRepository humanBeingRepository;
   private final SseService sseService;
 
-  public CarService(CarRepository carRepository, HumanBeingRepository humanBeingRepository,
-      SseService sseService) {
+  public CarService(CarRepository carRepository, SseService sseService) {
     this.carRepository = carRepository;
-    this.humanBeingRepository = humanBeingRepository;
     this.sseService = sseService;
   }
 
@@ -62,13 +58,12 @@ public class CarService {
     Car car = carRepository.findById(id)
         .orElseThrow(() -> new CarNotFoundException("Car with id " + id + " not found"));
 
-    boolean used = humanBeingRepository.existsByCar_Id(id);
-    if (used) {
-      throw new CarCannotBeDeletedException("Cannot delete car with id=" + id
+    try {
+      carRepository.delete(car);
+      sseService.broadcast("data_changed");
+    } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+      throw new CarCannotBeDeletedException("Cannot delete car with id " + id
           + ": it is referenced by human beings.");
     }
-
-    carRepository.delete(car);
-    sseService.broadcast("data_changed");
   }
 }
