@@ -22,29 +22,25 @@ public class GlobalExceptionHandler {
       errors.computeIfAbsent(fe.getField(), k -> new ArrayList<>())
           .add(fe.getDefaultMessage());
     });
-    return ResponseEntity.badRequest().body(Map.of(
-        "status", HttpStatus.BAD_REQUEST.value(),
-        "errors", errors
-    ));
+    return ResponseEntity.badRequest().body(Map.of("errors", errors));
   }
 
   @ExceptionHandler(NoSuchElementException.class)
   public ResponseEntity<?> handleNotFound(NoSuchElementException ex) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(Map.of("status", HttpStatus.NOT_FOUND.value(), "message", ex.getMessage()));
+        .body(Map.of("message", ex.getMessage()));
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<?> handleBadRequest(IllegalArgumentException ex) {
     return ResponseEntity.badRequest()
-        .body(Map.of("status", HttpStatus.BAD_REQUEST.value(), "message", ex.getMessage()));
+        .body(Map.of("message", ex.getMessage()));
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<?> handleAny(Exception ex) {
     ex.printStackTrace();
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(Map.of("status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            "message", "Internal error"));
+        .body(Map.of("message", "Internal error"));
   }
 }
