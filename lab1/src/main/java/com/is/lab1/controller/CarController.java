@@ -1,6 +1,7 @@
 package com.is.lab1.controller;
 
 import com.is.lab1.data.Car;
+import com.is.lab1.dto.CarUpdateRequest;
 import com.is.lab1.service.CarService;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -36,7 +39,7 @@ public class CarController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteCar(@PathVariable Long id) {
+  public ResponseEntity<?> deleteCarApi(@PathVariable Long id) {
     try {
       carService.deleteIfUnused(id);
       return ResponseEntity.ok().body(Map.of("message", "Car deleted successfully"));
@@ -46,6 +49,23 @@ public class CarController {
       return ResponseEntity.status(404).body(Map.of("error", "Car not found with id: " + id));
     } catch (Exception ex) {
       return ResponseEntity.status(500).body(Map.of("error", "Internal server error occurred"));
+    }
+  }
+
+  @PostMapping("/{id}/delete")
+  public String deleteCarWeb(@PathVariable Long id) {
+    try {
+      carService.deleteIfUnused(id);
+      return "redirect:/";
+    } catch (IllegalArgumentException ex) {
+      String msg = "Cannot delete car: " + ex.getMessage();
+      return "redirect:/?error=" + msg;
+    } catch (NoSuchElementException ex) {
+      String msg = "Car not found with id: " + id;
+      return "redirect:/?error=" + msg;
+    } catch (Exception ex) {
+      String msg = "Internal server error occurred";
+      return "redirect:/?error=" + msg;
     }
   }
 
@@ -68,17 +88,47 @@ public class CarController {
     return "index";
   }
 
+  @PatchMapping("/{id}")
+  public ResponseEntity<?> updateCarApi(@PathVariable Long id, @RequestBody CarUpdateRequest request) {
+    try {
+      Car car = carService.findById(id)
+              .orElseThrow(() -> new NoSuchElementException("Car not found with id: " + id));
+
+      if (request.getName() != null) {
+        car.setName(request.getName().isEmpty() ? null : request.getName());
+      }
+      if (request.getCool() != null) {
+        car.setCool(request.getCool());
+      }
+
+      Car updatedCar = carService.update(id, car);
+      return ResponseEntity.ok().body(Map.of("message", "Car updated successfully", "car", updatedCar));
+    } catch (NoSuchElementException ex) {
+      return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
+    } catch (Exception ex) {
+      return ResponseEntity.status(500).body(Map.of("error", "Internal server error occurred"));
+    }
+  }
+
   @PostMapping("/{id}/update")
-  public String updateCar(@PathVariable Long id,
-                         @RequestParam(required = false) String name,
-                         @RequestParam(defaultValue = "false") Boolean cool) {
-    Car car = carService.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Car not found with id: " + id));
+  public String updateCarWeb(@PathVariable Long id,
+                            @RequestParam(required = false) String name,
+                            @RequestParam(defaultValue = "false") Boolean cool) {
+    try {
+      Car car = carService.findById(id)
+              .orElseThrow(() -> new NoSuchElementException("Car not found with id: " + id));
 
-    car.setName(name != null && !name.isEmpty() ? name : null);
-    car.setCool(cool);
+      car.setName(name != null && !name.isEmpty() ? name : null);
+      car.setCool(cool);
 
-    carService.update(id, car);
-    return "redirect:/";
+      carService.update(id, car);
+      return "redirect:/";
+    } catch (NoSuchElementException ex) {
+      String msg = "Car not found with id: " + id;
+      return "redirect:/?error=" + msg;
+    } catch (Exception ex) {
+      String msg = "Internal server error occurred";
+      return "redirect:/?error=" + msg;
+    }
   }
 }
