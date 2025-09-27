@@ -43,7 +43,7 @@ public class CarController {
     } catch (IllegalArgumentException ex) {
       return ResponseEntity.badRequest().body(Map.of("error", "Cannot delete car: " + ex.getMessage()));
     } catch (NoSuchElementException ex) {
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.status(404).body(Map.of("error", "Car not found with id: " + id));
     } catch (Exception ex) {
       return ResponseEntity.status(500).body(Map.of("error", "Internal server error occurred"));
     }
@@ -52,7 +52,7 @@ public class CarController {
   @GetMapping("/{id}/edit")
   public String editCarForm(@PathVariable Long id, Model model) {
     Car car = carService.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Car not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Car not found with id: " + id));
     List<Car> cars = carService.findAll();
 
     model.addAttribute("car", car);
@@ -73,7 +73,7 @@ public class CarController {
                          @RequestParam(required = false) String name,
                          @RequestParam(defaultValue = "false") Boolean cool) {
     Car car = carService.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Car not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Car not found with id: " + id));
 
     car.setName(name != null && !name.isEmpty() ? name : null);
     car.setCool(cool);
