@@ -3,8 +3,11 @@ package com.is.lab1.controller;
 import com.is.lab1.data.Car;
 import com.is.lab1.service.CarService;
 import java.util.List;
+import java.util.Map;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,14 +34,14 @@ public class CarController {
     return "redirect:/";
   }
 
-  @PostMapping("/{id}/delete")
-  public String deleteCar(@PathVariable Long id) {
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteCar(@PathVariable Long id) {
     try {
       carService.deleteIfUnused(id);
-      return "redirect:/";
+      return ResponseEntity.ok().body(Map.of("message", "Car deleted successfully"));
     } catch (Exception ex) {
       String msg = ex.getMessage() == null ? "Delete failed" : ex.getMessage();
-      return "redirect:/?error=" + msg;
+      return ResponseEntity.badRequest().body(Map.of("error", msg));
     }
   }
 
