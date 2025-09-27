@@ -73,7 +73,7 @@ public class CarController {
   @GetMapping("/{id}/edit")
   public String editCarForm(@PathVariable Long id, Model model) {
     Car car = carService.findById(id)
-            .orElseThrow(() -> new CarNotFoundException("Car not found with id: " + id));
+            .orElseThrow(() -> new CarNotFoundException("Car with id " + id + " not found"));
     List<Car> cars = carService.findAll();
 
     model.addAttribute("car", car);
@@ -93,7 +93,7 @@ public class CarController {
   public ResponseEntity<?> updateCarApi(@PathVariable Long id, @RequestBody CarUpdateRequest request) {
     try {
       Car car = carService.findById(id)
-              .orElseThrow(() -> new CarNotFoundException("Car not found with id: " + id));
+              .orElseThrow(() -> new CarNotFoundException("Car with id " + id + " not found"));
 
       if (request.getName() != null) {
         car.setName(request.getName().isEmpty() ? null : request.getName());
@@ -117,7 +117,7 @@ public class CarController {
                             @RequestParam(defaultValue = "false") Boolean cool) {
     try {
       Car car = carService.findById(id)
-              .orElseThrow(() -> new CarNotFoundException("Car not found with id: " + id));
+              .orElseThrow(() -> new CarNotFoundException("Car with id " + id + " not found"));
 
       car.setName(name != null && !name.isEmpty() ? name : null);
       car.setCool(cool);

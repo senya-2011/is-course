@@ -43,7 +43,7 @@ public class CarService {
 
   public Car update(Long id, Car updated) {
     Car existing = carRepository.findById(id)
-        .orElseThrow(() -> new CarNotFoundException("Car not found: " + id));
+        .orElseThrow(() -> new CarNotFoundException("Car with id " + id + " not found"));
 
     existing.setName(updated.getName());
     existing.setCool(updated.isCool());
@@ -60,7 +60,7 @@ public class CarService {
   @Transactional
   public void deleteIfUnused(Long id) {
     Car car = carRepository.findById(id)
-        .orElseThrow(() -> new CarNotFoundException("Car not found with id: " + id));
+        .orElseThrow(() -> new CarNotFoundException("Car with id " + id + " not found"));
 
     boolean used = humanBeingRepository.existsByCar_Id(id);
     if (used) {
