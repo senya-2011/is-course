@@ -27,7 +27,7 @@
                             <span th:unless="${human.realHero}" class="badge bg-warning">No</span>
                         </td>
                         <td th:text="${human.hasToothpick == null ? 'null' : (human.hasToothpick ? 'Yes' : 'No')}"></td>
-                        <td th:text="${human.car?.name ?: (human.car ? 'Car #' + human.car.id : '')}"></td>
+                        <td th:text="${human.car == null ? '' : (human.car.name != null && #strings.length(human.car.name) > 0 ? human.car.name : 'Car #' + human.car.id)}"></td>
                         <td th:text="${human.impactSpeed}"></td>
                         <td th:text="${human.soundtrackName}"></td>
                         <td th:text="${human.weaponType}"></td>
