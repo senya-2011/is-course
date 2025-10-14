@@ -3,6 +3,8 @@ package com.is.lab1.controller;
 import com.is.lab1.exception.CarCannotBeDeletedException;
 import com.is.lab1.exception.CarNotFoundException;
 import com.is.lab1.exception.HumanBeingNotFoundException;
+import com.is.lab1.exception.ImportProcessingException;
+import com.is.lab1.exception.ImportValidationException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,6 +44,17 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(HumanBeingNotFoundException.class)
   public ResponseEntity<?> handleHumanBeingNotFound(HumanBeingNotFoundException ex) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(Map.of("message", ex.getMessage()));
+  }
+
+  @ExceptionHandler(ImportValidationException.class)
+  public ResponseEntity<?> handleImportValidation(ImportValidationException ex) {
+    return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
+  }
+
+  @ExceptionHandler(ImportProcessingException.class)
+  public ResponseEntity<?> handleImportProcessing(ImportProcessingException ex) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(Map.of("message", ex.getMessage()));
   }
 
