@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.is</groupId>
-    <artifactId>lab1</artifactId>
+    <artifactId>lab2</artifactId>
     <packaging>jar</packaging>
-    <name>lab1</name>
-    <description>lab1</description>
+    <name>lab2</name>
+    <description>lab2</description>
 
     <properties>
         <java.version>21</java.version>
@@ -65,7 +65,7 @@
     </dependencies>
 
     <build>
-        <finalName>lab1</finalName>
+        <finalName>lab2</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

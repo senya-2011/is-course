@@ -1,7 +1,7 @@
 {
-  "name": "lab1",
+  "name": "lab2",
   "version": "1.0.0",
-  "description": "Spring Boot Lab1 project with ESLint",
+  "description": "Spring Boot Lab2 project with ESLint",
   "main": "index.js",
   "scripts": {
     "lint": "eslint src/main/resources/static/js/**/*.js",

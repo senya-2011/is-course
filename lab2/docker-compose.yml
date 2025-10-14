@@ -1,5 +1,5 @@
 networks:
-  lab1:
+  lab2:
 
 services:
   db:
@@ -13,7 +13,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
-      - lab1
+      - lab2
 
 volumes:
   pgdata:
