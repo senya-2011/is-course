@@ -11,3 +11,25 @@
         console.error('SSE connection error:', e);
     }
 })();
+
+window.submitImport = async function(event) {
+    event.preventDefault();
+    var fileInput = document.getElementById('file');
+    if (!fileInput || !fileInput.files || !fileInput.files.length) {
+        alert('Choose a .json file');
+        return;
+    }
+    var fd = new FormData();
+    fd.append('file', fileInput.files[0], fileInput.files[0].name);
+    try {
+        var resp = await fetch('/import/humans', { method: 'POST', body: fd });
+        var data = await resp.json();
+        if (resp.ok) {
+            alert('Imported: ' + (data.imported ?? 0));
+        } else {
+            alert('Error: ' + (data.message || data.error || 'Import failed'));
+        }
+    } catch (e) {
+        alert('Network error');
+    }
+};
