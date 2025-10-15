@@ -9,10 +9,13 @@ import com.is.lab1.exception.CarNotFoundException;
 import com.is.lab1.exception.HumanBeingNotFoundException;
 import com.is.lab1.service.CarService;
 import com.is.lab1.service.HumanBeingService;
+import com.is.lab1.service.GeolocationService;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +32,12 @@ public class HumanController {
 
   private final HumanBeingService humanService;
   private final CarService carService;
+  private final GeolocationService geolocationService;
 
-  public HumanController(HumanBeingService humanService, CarService carService) {
+  public HumanController(HumanBeingService humanService, CarService carService, GeolocationService geolocationService) {
     this.humanService = humanService;
     this.carService = carService;
+    this.geolocationService = geolocationService;
   }
 
   @PostMapping
@@ -45,7 +50,8 @@ public class HumanController {
       @RequestParam(required = false) String mood,
       @RequestParam Float impactSpeed,
       @RequestParam String weaponType,
-      @RequestParam String soundtrackName) {
+      @RequestParam String soundtrackName,
+      HttpServletRequest request) {
     try {
       if (coordinatesY != null && coordinatesY > 818f) {
         throw new IllegalArgumentException("Y must be <= 818");
@@ -77,7 +83,20 @@ public class HumanController {
       human.setWeaponType(WeaponType.valueOf(weaponType));
       human.setSoundtrackName(soundtrackName);
 
-      humanService.create(human);
+      System.out.println("[IP DEBUG] X-Forwarded-For=" + request.getHeader("X-Forwarded-For")
+          + ", X-Real-IP=" + request.getHeader("X-Real-IP")
+          + ", remoteAddr=" + request.getRemoteAddr());
+      String userIp = getClientIpAddress(request);
+      System.out.println("[IP DEBUG] resolved client IP=" + userIp);
+      Optional<GeolocationService.CityCoordinates> cityCoords = geolocationService.getCityCoordinates(userIp);
+      if (cityCoords.isPresent()) {
+        GeolocationService.CityCoordinates cc = cityCoords.get();
+        System.out.println("[CREATE] ip=" + userIp + ", userCity=(lat=" + cc.getLatitude() + ", lon=" + cc.getLongitude() + ", name=" + cc.getCityName() + ")" +
+            ", submittedXY=(" + coordinatesX + ", " + coordinatesY + ")");
+      } else {
+        System.out.println("[CREATE] ip=" + userIp + ", userCity=unknown (local or lookup failed), submittedXY=(" + coordinatesX + ", " + coordinatesY + ")");
+      }
+      humanService.create(human, userIp);
       return "redirect:/";
     } catch (CarNotFoundException | HumanBeingNotFoundException ex) {
       String msg = ex.getMessage();
@@ -207,5 +226,32 @@ public class HumanController {
     int changed = humanService.reassignHeroesWithoutCarToLada();
     model.addAttribute("changedCount", changed);
     return "redirect:/?changed=" + changed;
+  }
+
+  private String getClientIpAddress(HttpServletRequest request) {
+    String xForwardedFor = request.getHeader("X-Forwarded-For");
+    if (xForwardedFor != null && !xForwardedFor.isEmpty() && !"unknown".equalsIgnoreCase(xForwardedFor)) {
+      return stripPort(xForwardedFor.split(",")[0].trim());
+    }
+    
+    String xRealIp = request.getHeader("X-Real-IP");
+    if (xRealIp != null && !xRealIp.isEmpty() && !"unknown".equalsIgnoreCase(xRealIp)) {
+      return stripPort(xRealIp);
+    }
+    
+    return stripPort(request.getRemoteAddr());
+  }
+
+  private String stripPort(String ip) {
+    if (ip == null) return null;
+    if (ip.startsWith("[")) {
+      int end = ip.indexOf(']');
+      if (end > 0) return ip.substring(1, end);
+    }
+    int colon = ip.lastIndexOf(':');
+    if (colon > -1 && ip.contains(".")) {
+      return ip.substring(0, colon);
+    }
+    return ip;
   }
 }

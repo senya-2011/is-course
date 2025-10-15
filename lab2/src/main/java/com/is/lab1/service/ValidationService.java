@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,11 @@ import org.springframework.stereotype.Service;
 public class ValidationService {
 
   private final HumanBeingRepository humanRepo;
+  private final GeolocationService geolocationService;
 
-  public ValidationService(HumanBeingRepository humanRepo) {
+  public ValidationService(HumanBeingRepository humanRepo, GeolocationService geolocationService) {
     this.humanRepo = humanRepo;
+    this.geolocationService = geolocationService;
   }
 
   public void validateHuman(HumanBeing hb) {
@@ -27,6 +30,15 @@ public class ValidationService {
     ensureUniqueSoundtrack(hb.getSoundtrackName());
     ensureUniqueCoordinates(hb.getCoordinates());
     ensureCarOwnersLimit(hb.getCar());
+  }
+
+  public void validateHuman(HumanBeing hb, String userIp) {
+    if (hb == null) throw new BusinessValidationException("human is null");
+    ensureUniqueHumanName(hb.getName());
+    ensureUniqueSoundtrack(hb.getSoundtrackName());
+    ensureUniqueCoordinates(hb.getCoordinates());
+    ensureCarOwnersLimit(hb.getCar());
+    ensureNotUserCityCoordinates(hb.getCoordinates(), userIp);
   }
 
   public void validateHumanUpdate(HumanBeing existing, HumanBeing updated) {
@@ -143,6 +155,36 @@ public class ValidationService {
     if (a == null && b == null) return true;
     if (a == null || b == null) return false;
     return a.equals(b);
+  }
+
+  private void ensureNotUserCityCoordinates(Coordinates coordinates, String userIp) {
+    if (coordinates == null) return;
+
+    Float humanX = coordinates.getCoordX();
+    Float humanY = coordinates.getCoordY();
+    if (humanX == null || humanY == null) return;
+
+    boolean ipMissing = (userIp == null || userIp.trim().isEmpty());
+    Optional<GeolocationService.CityCoordinates> cityCoords = ipMissing ? Optional.empty() : geolocationService.getCityCoordinates(userIp);
+
+    if (cityCoords.isEmpty()) {
+      if (Math.abs(humanX) <= 10.0 && Math.abs(humanY) <= 10.0) {
+        throw new BusinessValidationException("coordinates near origin are forbidden in local mode (|x|,|y| <= 10)");
+      }
+      return;
+    }
+
+    GeolocationService.CityCoordinates userCity = cityCoords.get();
+    double tolerance = 0.001; 
+    boolean matchesCity = Math.abs(humanX - userCity.getLatitude()) < tolerance && 
+                         Math.abs(humanY - userCity.getLongitude()) < tolerance;
+    
+    if (matchesCity) {
+      throw new BusinessValidationException(
+        String.format("Coordinates (%.3f, %.3f) cannot be the same as your city %s (%.3f, %.3f)", 
+          humanX, humanY, userCity.getCityName(), userCity.getLatitude(), userCity.getLongitude())
+      );
+    }
   }
 }
 

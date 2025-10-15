@@ -47,6 +47,17 @@ public class HumanBeingService {
     return saved;
   }
 
+  public HumanBeing create(HumanBeing hb, String userIp) {
+    if (hb.getName() != null) lockService.lockKey("human:name:" + hb.getName().toLowerCase());
+    if (hb.getSoundtrackName() != null) lockService.lockKey("human:soundtrack:" + hb.getSoundtrackName().toLowerCase());
+    if (hb.getCoordinates() != null) lockService.lockKey("human:coords:" + hb.getCoordinates().getCoordX() + ":" + hb.getCoordinates().getCoordY());
+    if (hb.getCar() != null && hb.getCar().getName() != null) lockService.lockKey("car:name:" + hb.getCar().getName().toLowerCase());
+    validationService.validateHuman(hb, userIp);
+    HumanBeing saved = humanRepo.save(hb);
+    sseService.broadcast("data_changed");
+    return saved;
+  }
+
   public Optional<HumanBeing> findById(Long id) {
     return humanRepo.findById(id);
   }
