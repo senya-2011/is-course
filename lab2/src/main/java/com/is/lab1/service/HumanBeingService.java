@@ -24,15 +24,24 @@ public class HumanBeingService {
   private final HumanBeingRepository humanRepo;
   private final CarRepository carRepo;
   private final SseService sseService;
+  private final ValidationService validationService;
+  private final LockService lockService;
 
   public HumanBeingService(HumanBeingRepository humanRepo, CarRepository carRepo,
-      SseService sseService) {
+      SseService sseService, ValidationService validationService, LockService lockService) {
     this.humanRepo = humanRepo;
     this.carRepo = carRepo;
     this.sseService = sseService;
+    this.validationService = validationService;
+    this.lockService = lockService;
   }
 
   public HumanBeing create(HumanBeing hb) {
+    if (hb.getName() != null) lockService.lockKey("human:name:" + hb.getName().toLowerCase());
+    if (hb.getSoundtrackName() != null) lockService.lockKey("human:soundtrack:" + hb.getSoundtrackName().toLowerCase());
+    if (hb.getCoordinates() != null) lockService.lockKey("human:coords:" + hb.getCoordinates().getCoordX() + ":" + hb.getCoordinates().getCoordY());
+    if (hb.getCar() != null && hb.getCar().getName() != null) lockService.lockKey("car:name:" + hb.getCar().getName().toLowerCase());
+    validationService.validateHuman(hb);
     HumanBeing saved = humanRepo.save(hb);
     sseService.broadcast("data_changed");
     return saved;
@@ -59,6 +68,13 @@ public class HumanBeingService {
     HumanBeing existing = humanRepo.findById(id)
         .orElseThrow(() -> new HumanBeingNotFoundException("HumanBeing with id " + id + " not found"));
     
+    if (updated.getName() != null) lockService.lockKey("human:name:" + updated.getName().toLowerCase());
+    if (updated.getSoundtrackName() != null) lockService.lockKey("human:soundtrack:" + updated.getSoundtrackName().toLowerCase());
+    if (updated.getCoordinates() != null) lockService.lockKey("human:coords:" + updated.getCoordinates().getCoordX() + ":" + updated.getCoordinates().getCoordY());
+    if (updated.getCar() != null && updated.getCar().getName() != null) lockService.lockKey("car:name:" + updated.getCar().getName().toLowerCase());
+
+    validationService.validateHumanUpdate(existing, updated);
+    
     existing.setName(updated.getName());
     existing.setCoordinates(updated.getCoordinates());
     existing.setRealHero(updated.isRealHero());
@@ -68,6 +84,7 @@ public class HumanBeingService {
     existing.setImpactSpeed(updated.getImpactSpeed());
     existing.setSoundtrackName(updated.getSoundtrackName());
     existing.setWeaponType(updated.getWeaponType());
+    
     HumanBeing saved = humanRepo.save(existing);
     sseService.broadcast("data_changed");
     return saved;
@@ -85,7 +102,7 @@ public class HumanBeingService {
   public boolean deleteOneByImpactSpeed(float value) {
     final double epsilon = 1e-6;
     
-    List<HumanBeing> candidates = humanRepo.findByImpactSpeedWithEpsilon(value, epsilon);
+    var candidates = humanRepo.findByImpactSpeedWithEpsilon(value, epsilon);
     
     if (!candidates.isEmpty()) {
       humanRepo.delete(candidates.get(0));
@@ -135,17 +152,13 @@ public class HumanBeingService {
   }
 
   private Specification<HumanBeing> containsInStringFields(String q) {
+    String pattern = "%" + q.toLowerCase(Locale.ROOT) + "%";
     return (root, query, cb) -> {
-      String like = "%" + q.toLowerCase(Locale.ROOT) + "%";
-      var namePath = cb.lower(root.get("name"));
-      var soundtrackPath = cb.lower(root.get("soundtrackName"));
+      var nameLike = cb.like(cb.lower(root.get("name")), pattern);
+      var soundtrackLike = cb.like(cb.lower(root.get("soundtrackName")), pattern);
       var carJoin = root.join("car", JoinType.LEFT);
-      var carNamePath = cb.lower(carJoin.get("name"));
-      return cb.or(
-          cb.like(namePath, like),
-          cb.like(soundtrackPath, like),
-          cb.like(carNamePath, like)
-      );
+      var carNameLike = cb.like(cb.lower(carJoin.get("name")), pattern);
+      return cb.or(nameLike, soundtrackLike, carNameLike);
     };
   }
 }

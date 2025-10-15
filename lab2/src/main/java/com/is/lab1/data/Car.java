@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +19,9 @@ public class Car {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Version
+  private Long version;
 
   @Column(name = "name")
   private String name; //Поле может быть null

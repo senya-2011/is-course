@@ -29,7 +29,7 @@ public class SseService {
     for (SseEmitter emitter : emitters) {
       try {
         emitter.send(SseEmitter.event().name(eventName).data("1"));
-      } catch (IOException e) {
+      } catch (Exception e) {
         emitters.remove(emitter);
       }
     }

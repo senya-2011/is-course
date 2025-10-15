@@ -25,6 +25,11 @@ public interface HumanBeingRepository extends JpaRepository<HumanBeing, Long>,
   @Query("SELECT SUM(h.impactSpeed) FROM HumanBeing h")
   Double sumImpactSpeed();
 
+  boolean existsByNameIgnoreCase(String name);
+  boolean existsBySoundtrackNameIgnoreCase(String soundtrackName);
+  @Query("SELECT COUNT(h) FROM HumanBeing h WHERE h.coordinates.coordX = :x AND h.coordinates.coordY = :y")
+  long countByCoordinates(@Param("x") Float x, @Param("y") Float y);
+
   @Query("SELECT h FROM HumanBeing h WHERE h.realHero = true AND " +
          "(h.hasToothpick IS NULL OR h.hasToothpick = false)")
   List<HumanBeing> findHeroesWithoutToothpick();
@@ -42,4 +47,7 @@ public interface HumanBeingRepository extends JpaRepository<HumanBeing, Long>,
   @Transactional
   @Query("UPDATE HumanBeing h SET h.car = :car WHERE h.id IN :ids")
   void updateCarForIds(@Param("car") com.is.lab1.data.Car car, @Param("ids") List<Long> ids);
+
+  @Query("SELECT COUNT(h) FROM HumanBeing h WHERE LOWER(h.car.name) = LOWER(:carName)")
+  long countByCarName(@Param("carName") String carName);
 }

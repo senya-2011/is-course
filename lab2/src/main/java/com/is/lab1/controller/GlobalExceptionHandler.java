@@ -5,6 +5,7 @@ import com.is.lab1.exception.CarNotFoundException;
 import com.is.lab1.exception.HumanBeingNotFoundException;
 import com.is.lab1.exception.ImportProcessingException;
 import com.is.lab1.exception.ImportValidationException;
+import com.is.lab1.exception.BusinessValidationException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,6 +16,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -56,6 +59,23 @@ public class GlobalExceptionHandler {
   public ResponseEntity<?> handleImportProcessing(ImportProcessingException ex) {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(Map.of("message", ex.getMessage()));
+  }
+
+  @ExceptionHandler(BusinessValidationException.class)
+  public ResponseEntity<?> handleBusinessValidation(BusinessValidationException ex) {
+    return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
+  }
+
+  @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+  public ResponseEntity<?> handleOptimisticLock(ObjectOptimisticLockingFailureException ex) {
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(Map.of("message", "Conflict: entity was modified by another transaction"));
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  public ResponseEntity<?> handleMissingParam(MissingServletRequestParameterException ex) {
+    String param = ex.getParameterName();
+    return ResponseEntity.badRequest().body(Map.of("message", "Missing parameter: " + param));
   }
 
   @ExceptionHandler(Exception.class)

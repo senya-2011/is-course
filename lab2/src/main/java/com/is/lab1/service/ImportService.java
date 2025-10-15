@@ -26,11 +26,15 @@ public class ImportService {
   private final ObjectMapper objectMapper;
   private final HumanBeingRepository humanRepo;
   private final CarRepository carRepo;
+  private final ValidationService validationService;
+  private final LockService lockService;
 
-  public ImportService(HumanBeingRepository humanRepo, CarRepository carRepo) {
+  public ImportService(HumanBeingRepository humanRepo, CarRepository carRepo, ValidationService validationService, LockService lockService) {
     this.objectMapper = new ObjectMapper();
     this.humanRepo = humanRepo;
     this.carRepo = carRepo;
+    this.validationService = validationService;
+    this.lockService = lockService;
   }
 
   @Transactional(rollbackFor = Exception.class)
@@ -57,6 +61,13 @@ public class ImportService {
       toSave.add(hb);
     }
 
+    for (HumanBeing hb : toSave) {
+      if (hb.getName() != null) lockService.lockKey("human:name:" + hb.getName().toLowerCase());
+      if (hb.getSoundtrackName() != null) lockService.lockKey("human:soundtrack:" + hb.getSoundtrackName().toLowerCase());
+      if (hb.getCoordinates() != null) lockService.lockKey("human:coords:" + hb.getCoordinates().getCoordX() + ":" + hb.getCoordinates().getCoordY());
+      if (hb.getCar() != null && hb.getCar().getName() != null) lockService.lockKey("car:name:" + hb.getCar().getName().toLowerCase());
+    }
+    validationService.validateBatch(toSave);
     humanRepo.saveAll(toSave);
     return toSave.size();
   }

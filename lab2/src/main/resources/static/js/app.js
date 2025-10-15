@@ -26,10 +26,12 @@ window.submitImport = async function(event) {
         var data = await resp.json();
         if (resp.ok) {
             alert('Imported: ' + (data.imported ?? 0));
+            location.reload();
         } else {
-            alert('Error: ' + (data.message || data.error || 'Import failed'));
+            const errorMsg = data.message || data.error || 'Import failed';
+            alert('Error: ' + errorMsg);
         }
     } catch (e) {
-        alert('Network error');
+        alert(e.message);
     }
 };
