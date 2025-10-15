@@ -12,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImportHistoryService {
 
   private final ImportOperationRepository repo;
+  private final SseService sseService;
 
-  public ImportHistoryService(ImportOperationRepository repo) {
+  public ImportHistoryService(ImportOperationRepository repo, SseService sseService) {
     this.repo = repo;
+    this.sseService = sseService;
   }
 
   @Transactional
@@ -34,6 +36,7 @@ public class ImportHistoryService {
       op.setStatus(ImportStatus.SUCCESS);
       op.setSuccessCount(count);
       repo.save(op);
+      sseService.broadcast("data_changed");
     });
   }
 
@@ -44,6 +47,7 @@ public class ImportHistoryService {
       op.setStatus(ImportStatus.FAILED);
       op.setErrorMessage(message);
       repo.save(op);
+      sseService.broadcast("data_changed");
     });
   }
 
