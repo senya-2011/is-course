@@ -39,6 +39,7 @@ public class ValidationService {
     ensureUniqueCoordinates(hb.getCoordinates());
     ensureCarOwnersLimit(hb.getCar());
     ensureNotUserCityCoordinates(hb.getCoordinates(), userIp);
+    ensureRageAllowedByTime(hb, userIp);
   }
 
   public void validateHumanUpdate(HumanBeing existing, HumanBeing updated) {
@@ -57,6 +58,8 @@ public class ValidationService {
     if (!equalsIgnoreCaseTrim(oldCarName, newCarName)) {
       ensureCarOwnersLimit(updated.getCar());
     }
+
+    ensureRageAllowedByTime(updated, null); 
   }
 
   public void validateBatch(List<HumanBeing> humans) {
@@ -184,6 +187,28 @@ public class ValidationService {
         String.format("Coordinates (%.3f, %.3f) cannot be the same as your city %s (%.3f, %.3f)", 
           humanX, humanY, userCity.getCityName(), userCity.getLatitude(), userCity.getLongitude())
       );
+    }
+  }
+
+  private void ensureRageAllowedByTime(HumanBeing hb, String userIp) {
+    if (hb == null || hb.getMood() == null) return;
+    if (!"RAGE".equalsIgnoreCase(hb.getMood().name())) return;
+
+    java.time.ZoneId zoneId = null;
+    if (userIp != null && !userIp.trim().isEmpty()) {
+      Optional<GeolocationService.CityCoordinates> cityCoords = geolocationService.getCityCoordinates(userIp);
+      if (cityCoords.isPresent() && cityCoords.get().getTimezone() != null && !cityCoords.get().getTimezone().isEmpty()) {
+        try { zoneId = java.time.ZoneId.of(cityCoords.get().getTimezone()); } catch (Exception ignored) {}
+      }
+    }
+    if (zoneId == null) {
+      zoneId = java.time.ZoneId.systemDefault();
+    }
+
+    java.time.LocalTime now = java.time.ZonedDateTime.now(zoneId).toLocalTime();
+    boolean inForbidden = !now.isBefore(java.time.LocalTime.of(19, 0)) || now.isBefore(java.time.LocalTime.of(10, 0));
+    if (inForbidden) {
+      throw new BusinessValidationException("mood=RAGE is forbidden between 19:00 and 10:00 local time");
     }
   }
 }
