@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 public class HumanBeingService {
@@ -36,6 +38,7 @@ public class HumanBeingService {
     this.lockService = lockService;
   }
 
+  @Transactional
   public HumanBeing create(HumanBeing hb) {
     if (hb.getName() != null) lockService.lockKey("human:name:" + hb.getName().toLowerCase());
     if (hb.getSoundtrackName() != null) lockService.lockKey("human:soundtrack:" + hb.getSoundtrackName().toLowerCase());
@@ -43,10 +46,16 @@ public class HumanBeingService {
     if (hb.getCar() != null && hb.getCar().getName() != null) lockService.lockKey("car:name:" + hb.getCar().getName().toLowerCase());
     validationService.validateHuman(hb);
     HumanBeing saved = humanRepo.save(hb);
-    sseService.broadcast("data_changed");
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+      @Override
+      public void afterCommit() {
+        sseService.broadcast("data_changed");
+      }
+    });
     return saved;
   }
 
+  @Transactional
   public HumanBeing create(HumanBeing hb, String userIp) {
     if (hb.getName() != null) lockService.lockKey("human:name:" + hb.getName().toLowerCase());
     if (hb.getSoundtrackName() != null) lockService.lockKey("human:soundtrack:" + hb.getSoundtrackName().toLowerCase());
@@ -54,7 +63,12 @@ public class HumanBeingService {
     if (hb.getCar() != null && hb.getCar().getName() != null) lockService.lockKey("car:name:" + hb.getCar().getName().toLowerCase());
     validationService.validateHuman(hb, userIp);
     HumanBeing saved = humanRepo.save(hb);
-    sseService.broadcast("data_changed");
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+      @Override
+      public void afterCommit() {
+        sseService.broadcast("data_changed");
+      }
+    });
     return saved;
   }
 

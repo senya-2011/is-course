@@ -1,0 +1,1 @@
+jmeter -n -t TestGet.jmx -l log-100.jtl -e -o .\RESULT-100\

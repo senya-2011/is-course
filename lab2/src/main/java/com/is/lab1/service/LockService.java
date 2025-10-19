@@ -13,7 +13,6 @@ public class LockService {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  @Transactional
   public void lockKey(String key) {
     jdbcTemplate.query("select pg_advisory_xact_lock(hashtext(?))", rs -> null, key);
   }

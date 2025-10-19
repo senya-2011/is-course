@@ -25,10 +25,19 @@ public interface HumanBeingRepository extends JpaRepository<HumanBeing, Long>,
   @Query("SELECT SUM(h.impactSpeed) FROM HumanBeing h")
   Double sumImpactSpeed();
 
-  boolean existsByNameIgnoreCase(String name);
-  boolean existsBySoundtrackNameIgnoreCase(String soundtrackName);
+  @Query("SELECT COUNT(h) > 0 FROM HumanBeing h WHERE LOWER(h.name) = LOWER(:name)")
+  boolean existsByNameIgnoreCase(@Param("name") String name);
+  @Query("SELECT COUNT(h) > 0 FROM HumanBeing h WHERE LOWER(h.soundtrackName) = LOWER(:soundtrackName)")
+  boolean existsBySoundtrackNameIgnoreCase(@Param("soundtrackName") String soundtrackName);
   @Query("SELECT COUNT(h) FROM HumanBeing h WHERE h.coordinates.coordX = :x AND h.coordinates.coordY = :y")
   long countByCoordinates(@Param("x") Float x, @Param("y") Float y);
+  
+  @Query("SELECT h FROM HumanBeing h WHERE LOWER(h.name) = LOWER(:name)")
+  List<HumanBeing> findByNameIgnoreCase(@Param("name") String name);
+  @Query("SELECT h FROM HumanBeing h WHERE LOWER(h.soundtrackName) = LOWER(:soundtrackName)")
+  List<HumanBeing> findBySoundtrackNameIgnoreCase(@Param("soundtrackName") String soundtrackName);
+  @Query("SELECT h FROM HumanBeing h WHERE h.coordinates.coordX = :x AND h.coordinates.coordY = :y")
+  List<HumanBeing> findByCoordinates(@Param("x") Float x, @Param("y") Float y);
 
   @Query("SELECT h FROM HumanBeing h WHERE h.realHero = true AND " +
          "(h.hasToothpick IS NULL OR h.hasToothpick = false)")

@@ -169,13 +169,12 @@ public class HumanController {
       @RequestParam String weaponType,
       @RequestParam String soundtrackName) {
     try {
-      HumanBeing human = humanService.findById(id)
-          .orElseThrow(() -> new HumanBeingNotFoundException("HumanBeing with id " + id + " not found"));
 
-      human.setName(name);
-      human.setCoordinates(new Coordinates(coordinatesX, coordinatesY));
-      human.setRealHero(realHero);
-      human.setHasToothpick(hasToothpick);
+      HumanBeing updatedHuman = new HumanBeing();
+      updatedHuman.setName(name);
+      updatedHuman.setCoordinates(new Coordinates(coordinatesX, coordinatesY));
+      updatedHuman.setRealHero(realHero);
+      updatedHuman.setHasToothpick(hasToothpick);
 
       Car car;
       if (carId != null) {
@@ -187,14 +186,14 @@ public class HumanController {
         car.setCool(false);
         car = carService.create(car);
       }
-      human.setCar(car);
+      updatedHuman.setCar(car);
 
-      human.setMood(mood != null && !mood.isEmpty() ? Mood.valueOf(mood) : null);
-      human.setImpactSpeed(impactSpeed);
-      human.setWeaponType(WeaponType.valueOf(weaponType));
-      human.setSoundtrackName(soundtrackName);
+      updatedHuman.setMood(mood != null && !mood.isEmpty() ? Mood.valueOf(mood) : null);
+      updatedHuman.setImpactSpeed(impactSpeed);
+      updatedHuman.setWeaponType(WeaponType.valueOf(weaponType));
+      updatedHuman.setSoundtrackName(soundtrackName);
 
-      humanService.update(id, human);
+      humanService.update(id, updatedHuman);
       return "redirect:/";
     } catch (CarNotFoundException | HumanBeingNotFoundException ex) {
       String msg = ex.getMessage();

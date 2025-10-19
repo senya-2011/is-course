@@ -46,12 +46,19 @@ public class ValidationService {
     if (existing == null || updated == null) throw new BusinessValidationException("human is null");
     if (!equalsIgnoreCaseTrim(existing.getName(), updated.getName())) {
       ensureUniqueHumanName(updated.getName());
+    } else {
+      ensureUniqueHumanNameExcluding(updated.getName(), existing.getId());
     }
+
     if (!equalsIgnoreCaseTrim(existing.getSoundtrackName(), updated.getSoundtrackName())) {
       ensureUniqueSoundtrack(updated.getSoundtrackName());
+    } else {
+      ensureUniqueSoundtrackExcluding(updated.getSoundtrackName(), existing.getId());
     }
     if (!coordsEqual(existing.getCoordinates(), updated.getCoordinates())) {
       ensureUniqueCoordinates(updated.getCoordinates());
+    } else {
+      ensureUniqueCoordinatesExcluding(updated.getCoordinates(), existing.getId());
     }
     String oldCarName = existing.getCar() != null ? existing.getCar().getName() : null;
     String newCarName = updated.getCar() != null ? updated.getCar().getName() : null;
@@ -209,6 +216,30 @@ public class ValidationService {
     boolean inForbidden = !now.isBefore(java.time.LocalTime.of(19, 0)) || now.isBefore(java.time.LocalTime.of(10, 0));
     if (inForbidden) {
       throw new BusinessValidationException("mood=RAGE is forbidden between 19:00 and 10:00 local time");
+    }
+  }
+
+  private void ensureUniqueHumanNameExcluding(String name, Long excludeId) {
+    if (name == null || name.trim().isEmpty()) return;
+    List<HumanBeing> existing = humanRepo.findByNameIgnoreCase(name);
+    if (existing.stream().anyMatch(h -> !h.getId().equals(excludeId))) {
+      throw new BusinessValidationException("name already exists: " + name);
+    }
+  }
+
+  private void ensureUniqueSoundtrackExcluding(String soundtrack, Long excludeId) {
+    if (soundtrack == null || soundtrack.trim().isEmpty()) return;
+    List<HumanBeing> existing = humanRepo.findBySoundtrackNameIgnoreCase(soundtrack);
+    if (existing.stream().anyMatch(h -> !h.getId().equals(excludeId))) {
+      throw new BusinessValidationException("soundtrack already exists: " + soundtrack);
+    }
+  }
+
+  private void ensureUniqueCoordinatesExcluding(Coordinates coordinates, Long excludeId) {
+    if (coordinates == null || coordinates.getCoordX() == null || coordinates.getCoordY() == null) return;
+    List<HumanBeing> existing = humanRepo.findByCoordinates(coordinates.getCoordX(), coordinates.getCoordY());
+    if (existing.stream().anyMatch(h -> !h.getId().equals(excludeId))) {
+      throw new BusinessValidationException("coordinates already exist: (" + coordinates.getCoordX() + ", " + coordinates.getCoordY() + ")");
     }
   }
 }

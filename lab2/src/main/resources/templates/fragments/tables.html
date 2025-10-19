@@ -14,7 +14,7 @@
                 <thead>
                     <tr>
                         <th>ID</th><th>Name</th><th>Coords</th><th>Hero</th><th>Toothpick</th>
-                        <th>Car</th><th>Impact</th><th>Soundtrack</th><th>Weapon</th><th>Actions</th>
+                        <th>Mood</th><th>Car</th><th>Impact</th><th>Soundtrack</th><th>Weapon</th><th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,6 +27,7 @@
                             <span th:unless="${human.realHero}" class="badge bg-warning">No</span>
                         </td>
                         <td th:text="${human.hasToothpick == null ? 'null' : (human.hasToothpick ? 'Yes' : 'No')}"></td>
+                        <td th:text="${human.mood}"></td>
                         <td th:text="${human.car == null ? '' : (human.car.name != null && #strings.length(human.car.name) > 0 ? human.car.name : 'Car #' + human.car.id)}"></td>
                         <td th:text="${human.impactSpeed}"></td>
                         <td th:text="${human.soundtrackName}"></td>
@@ -40,7 +41,7 @@
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(humans)}">
-                        <td colspan="10" class="text-center text-muted">No humans found</td>
+                        <td colspan="11" class="text-center text-muted">No humans found</td>
                     </tr>
                 </tbody>
             </table>
