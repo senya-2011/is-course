@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.Version;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
@@ -41,8 +40,6 @@ public class HumanBeing {
   private Long id; //Значение поля должно быть больше 0, Значение этого поля должно быть
   // уникальным, Значение этого поля должно генерироваться автоматически
 
-  @Version
-  private Long version;
 
   @NotBlank
   @Column(nullable = false)
