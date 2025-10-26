@@ -16,6 +16,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/humans")
 public class HumanController {
+
+  private static final Logger logger = LoggerFactory.getLogger(HumanController.class);
 
   private final HumanBeingService humanService;
   private final CarService carService;
@@ -83,25 +87,23 @@ public class HumanController {
       human.setWeaponType(WeaponType.valueOf(weaponType));
       human.setSoundtrackName(soundtrackName);
 
-      System.out.println("[IP DEBUG] X-Forwarded-For=" + request.getHeader("X-Forwarded-For")
-          + ", X-Real-IP=" + request.getHeader("X-Real-IP")
-          + ", remoteAddr=" + request.getRemoteAddr());
+      logger.info("Client IP resolution - X-Forwarded-For: {}, X-Real-IP: {}, remoteAddr: {}", 
+          request.getHeader("X-Forwarded-For"), request.getHeader("X-Real-IP"), request.getRemoteAddr());
       String userIp = getClientIpAddress(request);
-      System.out.println("[IP DEBUG] resolved client IP=" + userIp);
+      logger.info("Resolved client IP: {}", userIp);
+      
       Optional<GeolocationService.CityCoordinates> cityCoords = geolocationService.getCityCoordinates(userIp);
       if (cityCoords.isPresent()) {
         GeolocationService.CityCoordinates cc = cityCoords.get();
-        System.out.println("[CREATE] ip=" + userIp + ", userCity=(lat=" + cc.getLatitude() + ", lon=" + cc.getLongitude() + ", name=" + cc.getCityName() + ")" +
-            ", submittedXY=(" + coordinatesX + ", " + coordinatesY + ")");
+        logger.info("Creating human - IP: {}, city: {} ({}, {}), coordinates: ({}, {})", 
+            userIp, cc.getCityName(), cc.getLatitude(), cc.getLongitude(), coordinatesX, coordinatesY);
       } else {
-        System.out.println("[CREATE] ip=" + userIp + ", userCity=unknown (local or lookup failed), submittedXY=(" + coordinatesX + ", " + coordinatesY + ")");
+        logger.info("Creating human - IP: {}, city: unknown (local or lookup failed), coordinates: ({}, {})", 
+            userIp, coordinatesX, coordinatesY);
       }
       humanService.create(human, userIp);
+      logger.info("Successfully created human: {}", name);
       return "redirect:/";
-    } catch (CarNotFoundException | HumanBeingNotFoundException ex) {
-      String msg = ex.getMessage();
-      String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
-      return "redirect:/?error=" + encoded;
     } catch (Exception ex) {
       String msg = ex.getMessage() == null ? "Create failed" : ex.getMessage();
       String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
@@ -113,11 +115,10 @@ public class HumanController {
   public ResponseEntity<?> deleteHumanApi(@PathVariable Long id) {
     try {
       humanService.delete(id);
+      logger.info("Successfully deleted human with id: {}", id);
       return ResponseEntity.ok().body(Map.of("message", "HumanBeing deleted successfully"));
-    } catch (HumanBeingNotFoundException ex) {
-      return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
     } catch (Exception ex) {
-      return ResponseEntity.status(500).body(Map.of("error", "Internal server error occurred"));
+      throw ex;
     }
   }
 
@@ -125,11 +126,8 @@ public class HumanController {
   public String deleteHuman(@PathVariable Long id) {
     try {
       humanService.delete(id);
+      logger.info("Successfully deleted human with id: {}", id);
       return "redirect:/";
-    } catch (HumanBeingNotFoundException ex) {
-      String msg = ex.getMessage();
-      String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
-      return "redirect:/?error=" + encoded;
     } catch (Exception ex) {
       String msg = ex.getMessage() == null ? "Delete failed" : ex.getMessage();
       String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
@@ -194,11 +192,8 @@ public class HumanController {
       updatedHuman.setSoundtrackName(soundtrackName);
 
       humanService.update(id, updatedHuman);
+      logger.info("Successfully updated human with id: {}", id);
       return "redirect:/";
-    } catch (CarNotFoundException | HumanBeingNotFoundException ex) {
-      String msg = ex.getMessage();
-      String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
-      return "redirect:/?error=" + encoded;
     } catch (Exception ex) {
       String msg = ex.getMessage() == null ? "Update failed" : ex.getMessage();
       String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
