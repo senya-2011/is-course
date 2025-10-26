@@ -127,7 +127,7 @@ public class HumanBeingService {
   public boolean deleteOneByImpactSpeed(float value) {
     final double epsilon = 1e-6;
     
-    var candidates = humanRepo.findByImpactSpeedWithEpsilon(value, epsilon);
+    List<HumanBeing> candidates = humanRepo.findByImpactSpeedWithEpsilon(value, epsilon);
     
     if (!candidates.isEmpty()) {
       humanRepo.delete(candidates.get(0));
