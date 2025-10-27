@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
 @Service
 public class GeolocationService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(GeolocationService.class);
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -40,7 +44,7 @@ public class GeolocationService {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Failed to get geolocation for IP " + ipAddress + ": " + e.getMessage());
+            logger.error("Failed to get geolocation for IP " + ipAddress + ": " + e.getMessage());
         }
         
         return Optional.empty();
