@@ -1,0 +1,112 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36" version="28.2.4">
+  <diagram name="Страница — 1" id="DDcloDTUqTshtyGj_7HB">
+    <mxGraphModel dx="3329" dy="1334" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-8" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;strokeColor=default;" edge="1" parent="1" source="CTMe33j5zIT5Y6U0V3GE-1" target="CTMe33j5zIT5Y6U0V3GE-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-650" y="180" width="1070" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-2" value="com.is.lab1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-590" y="200" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-3" value="Lab1Application" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-190" y="190" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-16" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="CTMe33j5zIT5Y6U0V3GE-4" target="CTMe33j5zIT5Y6U0V3GE-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-4" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-650" y="280" width="200" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-5" value="com.is.lab1.repository" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-620" y="285" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-6" value="HumanBeingRepository" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-630" y="340" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-7" value="CarRepository" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-630" y="430" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-9" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-413" y="610" width="473" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-10" value="com.is.lab1.data" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-390" y="610" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-11" value="Car" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-350" y="640" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-12" value="HumanBeing" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-220" y="640" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-13" value="WeaponType" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-90" y="640" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-14" value="Mood" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-350" y="710" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-17" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-380" y="320" width="473" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-18" value="com.is.lab1.service" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-350" y="320" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.005;entryY=0.568;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="CTMe33j5zIT5Y6U0V3GE-17" target="CTMe33j5zIT5Y6U0V3GE-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-20" value="CarService" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-340" y="360" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-21" value="HumanBeingService" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-203.5" y="360" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-22" value="SseService" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-70" y="360" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.53;entryY=0.02;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="CTMe33j5zIT5Y6U0V3GE-3" target="CTMe33j5zIT5Y6U0V3GE-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-24" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="330" width="473" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.994;entryY=0.556;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="CTMe33j5zIT5Y6U0V3GE-24" target="CTMe33j5zIT5Y6U0V3GE-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.007;entryY=0.447;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="CTMe33j5zIT5Y6U0V3GE-17" target="CTMe33j5zIT5Y6U0V3GE-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-27" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.589;entryY=-0.007;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="CTMe33j5zIT5Y6U0V3GE-1" target="CTMe33j5zIT5Y6U0V3GE-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-28" value="com.is.lab1.controller" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="200" y="330" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-29" value="CarController" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="365" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-30" value="GlobalExceptionHandler" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="365" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-31" value="HumanBeingController" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="365" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-32" value="SseController" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-33" value="WebController" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.572;entryY=0.01;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="CTMe33j5zIT5Y6U0V3GE-17" target="CTMe33j5zIT5Y6U0V3GE-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTMe33j5zIT5Y6U0V3GE-35" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.962;entryY=0.01;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="CTMe33j5zIT5Y6U0V3GE-24" target="CTMe33j5zIT5Y6U0V3GE-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Button Fragments</title>
+</head>
+<body>
+
+<div th:fragment="submit-button(text, class, type)">
+    <button type="submit" th:class="'btn ' + ${class}" th:text="${text}"></button>
+</div>
+
+<div th:fragment="action-button(text, class, href)">
+    <a th:href="${href}" th:class="'btn ' + ${class}" th:text="${text}"></a>
+</div>
+
+<div th:fragment="delete-button(text, action, id, confirmMessage)">
+    <form method="post" th:action="${action}" class="d-inline" th:onsubmit="'return confirm(\'' + ${confirmMessage} + '\')'">
+        <button type="submit" th:class="'btn ' + ${text}" th:text="${text}"></button>
+    </form>
+</div>
+
+<div th:fragment="edit-button(text, href, class)">
+    <a th:href="${href}" th:class="'btn ' + ${class}" th:text="${text}"></a>
+</div>
+
+<div th:fragment="button-group">
+    <div class="btn-group-actions">
+        <div th:replace="~{::content}"></div>
+    </div>
+</div>
+
+<div th:fragment="special-operations">
+    <div class="card">
+        <div class="card-header">Special Operations</div>
+        <div class="card-body special-operations">
+            <form method="post" action="/humans/sum-impact" class="d-inline">
+                <button type="submit" class="btn btn-info">Sum Impact Speed</button>
+            </form>
+            <form method="post" action="/humans/delete-heroes-without-toothpick" class="d-inline" 
+                  onsubmit="return confirm('Delete all heroes without toothpicks?')">
+                <button type="submit" class="btn btn-warning">Delete Heroes w/o Toothpick</button>
+            </form>
+            <form method="post" action="/humans/assign-lada" class="d-inline"
+                  onsubmit="return confirm('Assign Lada to heroes without cars?')">
+                <button type="submit" class="btn btn-danger">Assign Lada to Heroes</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

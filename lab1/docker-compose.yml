@@ -1,0 +1,19 @@
+networks:
+  lab1:
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${DB_HELIOS_USERNAME}
+      - POSTGRES_PASSWORD=${DB_HELIOS_PASSWORD}
+      - POSTGRES_DB=studs
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - lab1
+
+volumes:
+  pgdata:
