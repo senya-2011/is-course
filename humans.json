@@ -1,0 +1,24 @@
+[
+    {
+      "name": "Alice",
+      "mood": "RAGE",
+      "soundtrack": "track-001",
+      "impactSpeed": 0.5,
+      "weaponType": "AXE",
+      "realHero": true,
+      "hasToothpick": false,
+      "coordinates": { "x": 10, "y": 20 },
+      "car": { "name": "BMW-1", "cool": true }
+    },
+    {
+      "name": "Bob",
+      "mood": "CALM",
+      "soundtrack": "track-002",
+      "impactSpeed": 1.2,
+      "weaponType": "HAMMER",
+      "realHero": false,
+      "hasToothpick": true,
+      "coordinates": { "x": 11, "y": 21 },
+      "car": { "name": "BMW-2", "cool": false }
+    }
+  ]

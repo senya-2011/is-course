@@ -1,0 +1,13 @@
+[
+    {
+      "name211": "Alice",
+      "moo312d": "SADNESS",
+      "soundtrack": "track-001",
+      "impactSpeed": 0.5,
+      "weapon223Type": "AXE",
+      "realHero": true,
+      "hasT21oothpick": false,
+      "coordinates": { "x": 10, "y": 20 },
+      "car32": { "name": "BMW-1", "cool": true }
+    }
+  ]
